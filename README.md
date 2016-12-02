@@ -7,10 +7,10 @@ The detailes about the algorithm can be found in
 
 This implementation is referenced by Xifeng Yan, the author of gSpan, [in his web page](https://www.cs.ucsb.edu/~xyan/software/gSpan.htm). 
 And is taken from [library gBoost](http://www.nowozin.net/sebastian/gboost/#download), Graph Boosting Toolbox for Matlab.
-.  gBoost is dual-licensed under both the GNU General Public License, version 2 and the Mozilla Public License, version 1.1. Accordingly we remain among these settings.
+gBoost is dual-licensed under both the GNU General Public License, version 2 and the Mozilla Public License, version 1.1. Accordingly we remain among these settings.
 
 ## Some details about the algorithm
-*gSpan* finds frequent graph patterns starting from empty graphs and moving to larger and large ones. It uses canoncial code DFS to avoid redandancy in generated subgraphs. 
+*gSpan* finds frequent graph patterns starting from an empty graph and moving to larger and large ones. It uses canoncial code DFS to avoid redandancy in generated subgraphs. 
 
 ## Compilation of the library
 You will need
@@ -39,9 +39,20 @@ The interface of the library can be found in the [include file](https://github.c
 It consist of one function **RungSpan** that accepts the same parameters as the original implementation plus a reference to the callback function and an arbitrary data pointer passed to the callback function.
 The introduction of the callback function allows for a flexibal interaction with the **gSpan** algorithm.
 ```c++
-/*
-	TODO
-*/
+/**
+ * This function that runs gaston on the input dataset.
+ * @param inputFileName is the name of the file containing the descriptions of graphs
+ * @param support is minimal support (the number of graphs from the dataset) of a discovered graph pattern (a subgraph)
+ * @param callback is the callback function, which is used for reporting discovered graphs
+ * @param minsize is the minimal number of nodes in discovered graphs 
+ * @param maxsize is the maximal number of nodes in discovered graphs (negative number means 'no limitations')
+ * @param directed is the flag for indicating if the graphs in the database are directed
+ * @return is the success of the operation.
+ */
+typedef bool (LibgSpanAPI *RungSpanFunc)( LibgSpanDataRef data,
+                                          const char* inputFileName, int support, ReportGraphCallback callback, int minsize /*= 0*/, int maxsize /*= -1*/, bool directed /*= false*/ );
+bool LibgSpanAPI RungSpan( LibgSpanDataRef data,
+    const char* inputFileName, int support, ReportGraphCallback callback, int minsize = 0, int maxsize = -1, bool directed = false );
 ```
 
 ### Callback function
