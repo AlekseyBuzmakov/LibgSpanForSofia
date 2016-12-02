@@ -25,8 +25,6 @@
 #include <set>
 #include <algorithm>
 
-#include <mex.h>
-
 namespace GSPAN {
 
 template <class T> inline void _swap (T &x, T &y) { T z = x; x = y; y = z; }
@@ -75,9 +73,9 @@ public:
 	void buildEdge ();
 	std::istream &read (std::istream &); // read
 	std::ostream &write (std::ostream &); // write
-	void read (const mxArray* graph);
-	void mexprint (void);
-	mxArray* writemex (void);
+	// void read (const mxArray* graph);
+	// void mexprint (void);
+	// mxArray* writemex (void);
 	void check (void);
 
 	Graph(): edge_size_(0), directed(false) {};
@@ -199,18 +197,18 @@ private:
 	DFSCode                     DFS_CODE_IS_MIN;
 	Graph                       GRAPH_IS_MIN;
 
-	bool mex;	// Shall we output to matlab structures?
-	class mexOutputG {
-	public:
-		struct mexOutputG* next;
-		mxArray* graph;
-		double par;
-		std::map<unsigned int, unsigned int> counts;
-	};
-	mexOutputG* mexOutputRoot;
-	mexOutputG* mexOutputLast;
-	void mexAppendGraph (Graph* g, unsigned int ID, double par,
-		std::map<unsigned int, unsigned int>& counts);
+	// bool mex;	// Shall we output to matlab structures?
+	// class mexOutputG {
+	// public:
+	// 	struct mexOutputG* next;
+	// 	// mxArray* graph;
+	// 	double par;
+	// 	std::map<unsigned int, unsigned int> counts;
+	// };
+	// mexOutputG* mexOutputRoot;
+	// mexOutputG* mexOutputLast;
+	// void mexAppendGraph (Graph* g, unsigned int ID, double par,
+	// 	std::map<unsigned int, unsigned int>& counts);
 
 	unsigned int ID;
 	unsigned int minsup;
@@ -229,38 +227,38 @@ private:
 
 	/* Graph boosting variables
 	 */
-	bool boost;
-	double boostTau;	// lower bound to be a suitable pattern.
-	unsigned int boostN;	// Number of top-n graphs to collect
-	double boostWeightSum;	// \sum_{i=1}^L y_i d_i
-	int boostType;	// 1: 1.5-class, 2: 2-class LPBoosting
-	std::vector<double> boostY;	// +1/-1 labels
-	std::vector<double> boostWeights;	// sample weights
+	// bool boost;
+	// double boostTau;	// lower bound to be a suitable pattern.
+	// unsigned int boostN;	// Number of top-n graphs to collect
+	// double boostWeightSum;	// \sum_{i=1}^L y_i d_i
+	// int boostType;	// 1: 1.5-class, 2: 2-class LPBoosting
+	// std::vector<double> boostY;	// +1/-1 labels
+	// std::vector<double> boostWeights;	// sample weights
 
-	std::vector<Graph> bestGraphs;
-	std::vector<double> bestGraphsY;
-	std::vector<double> bestGraphsGain;
-	std::vector<std::map<unsigned int, unsigned int> > bestGraphsCounts;
-	unsigned int boostseen;
-	unsigned int boostmax;
+	// std::vector<Graph> bestGraphs;
+	// std::vector<double> bestGraphsY;
+	// std::vector<double> bestGraphsGain;
+	// std::vector<std::map<unsigned int, unsigned int> > bestGraphsCounts;
+	// unsigned int boostseen;
+	// unsigned int boostmax;
 
 	/* Transparent pointers for gain function and gain bound.
 	 */
-	double (gSpan::* gain)(Projected &projected, double y);
-	double (gSpan::* gainbound)(Projected &projected);
+	// double (gSpan::* gain)(Projected &projected, double y);
+	// double (gSpan::* gainbound)(Projected &projected);
 
 	/* Graph boosting methods
 	 */
-	double gainbound2 (Projected &projected);
-	double gainbound1d5 (Projected &projected);
+	// double gainbound2 (Projected &projected);
+	// double gainbound1d5 (Projected &projected);
 
-	double gain2 (Projected &projected, double y);
-	double gain1d5 (Projected &projected, double y);
+	// double gain2 (Projected &projected, double y);
+	// double gain1d5 (Projected &projected, double y);
 
-	void report_boosting (Projected &projected, unsigned int sup,
-		double gain, double yval);
-	void report_boosting_inter (Graph &g, unsigned int sup,
-		double gain, double yval, std::map<unsigned int, unsigned int>& GYcounts);
+	// void report_boosting (Projected &projected, unsigned int sup,
+	// 	double gain, double yval);
+	// void report_boosting_inter (Graph &g, unsigned int sup,
+	// 	double gain, double yval, std::map<unsigned int, unsigned int>& GYcounts);
 	void report_single (Graph &g, std::map<unsigned int, unsigned int>& ncount);
 
 	bool is_min ();
@@ -272,7 +270,7 @@ private:
 	void report         (Projected &, unsigned int);
 
 	std::istream &read (std::istream &);
-	void read (const mxArray* graphs);
+	// void read (const mxArray* graphs);
 
 	void run_intern (void);
 
@@ -281,11 +279,11 @@ public:
 
 	/* boostType: 1 for 1.5-class LPBoosting, 2 for 2-class LPBoosting
 	 */
-	void boost_setup (unsigned int _boostN, double _boostTau,
-		unsigned int _boostmax,
-		std::vector<double>& _boostY,
-		std::vector<double>& _boostWeights,
-		int boostType);
+	// void boost_setup (unsigned int _boostN, double _boostTau,
+	// 	unsigned int _boostmax,
+	// 	std::vector<double>& _boostY,
+	// 	std::vector<double>& _boostWeights,
+	// 	int boostType);
 
 	void run (std::istream &is, std::ostream &_os,
 		 unsigned int _minsup,
@@ -295,12 +293,12 @@ public:
 		 bool _directed);
 
 	// For use with Matlab.
-	void run_graphs (const mxArray* graphs, int nlhs, mxArray* plhs[],
-		 unsigned int _minsup,
-		 unsigned int _maxpat_min, unsigned int _maxpat_max,
-		 bool _enc,
-		 bool _where,
-		 bool _directed);
+	// void run_graphs (const mxArray* graphs, int nlhs, mxArray* plhs[],
+	// 	 unsigned int _minsup,
+	// 	 unsigned int _maxpat_min, unsigned int _maxpat_max,
+	// 	 bool _enc,
+	// 	 bool _where,
+	// 	 bool _directed);
 };
 };
 
