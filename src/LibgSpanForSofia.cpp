@@ -92,6 +92,6 @@ int main (int argc, char **argv)
 		}
 	}
 
-	GSPAN::gSpan gspan;
+	LibgSpanForSofia::gSpan gspan;
 	gspan.run (std::cin, std::cout, minsup, maxpat, minnodes, enc, where, directed);
 }

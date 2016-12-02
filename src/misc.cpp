@@ -22,7 +22,7 @@
 #include "gspan.h"
 #include <assert.h>
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 const RMPath &DFSCode::buildRMPath ()
 {

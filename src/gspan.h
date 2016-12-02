@@ -25,7 +25,7 @@
 #include <set>
 #include <algorithm>
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 template <class T> inline void _swap (T &x, T &y) { T z = x; x = y; y = z; }
 

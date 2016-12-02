@@ -29,7 +29,7 @@
 
 #include <assert.h>
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 template <class T, class Iterator>
 void tokenize (const char *str, Iterator iterator)

@@ -21,7 +21,7 @@
 */
 #include "gspan.h"
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 bool gSpan::is_min ()
 {

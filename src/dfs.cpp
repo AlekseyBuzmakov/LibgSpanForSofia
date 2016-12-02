@@ -25,7 +25,7 @@
 #include <iterator>
 #include <set>
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 /* Build a DFS code from a given graph.
  */

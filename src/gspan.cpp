@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace GSPAN {
+namespace LibgSpanForSofia {
 
 gSpan::gSpan (void)
 {
