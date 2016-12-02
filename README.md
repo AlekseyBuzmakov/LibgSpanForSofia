@@ -3,7 +3,7 @@
 
 The detailes about the algorithm can be found in 
 
-> X. Yan and J. Han, “gSpan: Graph-Based Substructure Pattern Mining,” in Data Mining, 2002. ICDM 2003. Proceedings. …, 2002, pp. 721–724.[1] X. Yan and J. Han, “gSpan: Graph-Based Substructure Pattern Mining,” in Data Mining, 2002. ICDM 2003. Proceedings. …, 2002, pp. 721–724.
+> X. Yan and J. Han, “gSpan: Graph-Based Substructure Pattern Mining,” in Data Mining, 2002. ICDM 2003. Proceedings. 2002, pp. 721–724.
 
 This implementation is referenced by Xifeng Yan, the author of gSpan, [in his web page](https://www.cs.ucsb.edu/~xyan/software/gSpan.htm). 
 And is taken from [library gBoost](http://www.nowozin.net/sebastian/gboost/#download), Graph Boosting Toolbox for Matlab.
