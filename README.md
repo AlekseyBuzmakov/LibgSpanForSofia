@@ -1,4 +1,4 @@
-# LibGastonForSofia
+# LibgSpanForSofia
 А wrap-up c++ library for gSpan algorithm implemented by Taku Kudo
 
 The detailes about the algorithm can be found in 
@@ -7,10 +7,10 @@ The detailes about the algorithm can be found in
 
 This implementation is referenced by Xifeng Yan, the author of gSpan, [in his web page](https://www.cs.ucsb.edu/~xyan/software/gSpan.htm). 
 And is taken from [library gBoost](http://www.nowozin.net/sebastian/gboost/#download), Graph Boosting Toolbox for Matlab.
-The implementation of the algorithm is taken from [the web cite of Siegfried Nijssen](http://liacs.leidenuniv.nl/~nijssensgr/gaston/index.html).  gBoost is dual-licensed under both the GNU General Public License, version 2 and the Mozilla Public License, version 1.1. Accordingly we remain among these settings.
+.  gBoost is dual-licensed under both the GNU General Public License, version 2 and the Mozilla Public License, version 1.1. Accordingly we remain among these settings.
 
 ## Some details about the algorithm
-Gaston finds frequent graph patterns starting from empty graphs and moving to larger and large ones. It uses canoncial code DFS to avoid redandancy in generated subgraphs. 
+*gSpan* finds frequent graph patterns starting from empty graphs and moving to larger and large ones. It uses canoncial code DFS to avoid redandancy in generated subgraphs. 
 
 ## Compilation of the library
 You will need
@@ -33,7 +33,7 @@ The most widely used configurations are
 The script converts the description from the file __premake4.lua__ to the format of your IDE in love. The file is placed in the __build__ subdirectory.
 Then, I guess, you know what to do with the resulting file.
 
-## Interface of the LibGastonForSofia library
+## Interface of the LibgSpanForSofia library
 The interface of the library can be found in the [include file](https://github.com/AlekseyBuzmakov/LibgSpanForSofia/blob/master/inc/LibgSpanForSofia.h).
 
 It consist of one function **RungSpan** that accepts the same parameters as the original implementation plus a reference to the callback function and an arbitrary data pointer passed to the callback function.
@@ -101,4 +101,4 @@ typedef void* LibgSpanDataRef;
 ```
 
 ### The **return** value of the callback function.
-The callback function returns a boolean value that adds an aditional control over **gSpan**. It is very usefull for branch cutting. Basically it returns the necessity of the expanision of the current graph pattern. If the user knows somehow that the current graph and all its supergraph are of no use, it can return **false** from the callback function saving some computational time. If the callback function always returns **true**, then the result is exactly the same as the one returned by original **Gaston** with the corresponding parameters.
+The callback function returns a boolean value that adds an aditional control over **gSpan**. It is very usefull for branch cutting. Basically it returns the necessity of the expanision of the current graph pattern. If the user knows somehow that the current graph and all its supergraph are of no use, it can return **false** from the callback function saving some computational time. If the callback function always returns **true**, then the result is exactly the same as the one returned by original **gSpan** with the corresponding parameters.
