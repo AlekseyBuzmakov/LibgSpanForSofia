@@ -129,6 +129,13 @@ bool LibgSpanAPI PrintToFileCallback( LibgSpanDataRef, const LibgSpanGraph* grap
 /////////////////////////////////////
 }
 
+bool LibgSpanAPI RungSpan( LibgSpanDataRef data,
+    const char* inputFileName, int support, ReportGraphCallback callback, int minsize, int maxsize, bool directed )
+{
+	LibgSpanForSofia::gSpan gspan;
+	gspan.run (inputFileName, callback, data, support, minsize, maxsize, directed);
+}
+
 // A main function for testing properties
 int main (int argc, char **argv)
 {
