@@ -33,3 +33,6 @@ GTAGS
 
 #Main file
 build
+
+# Output files
+*.out

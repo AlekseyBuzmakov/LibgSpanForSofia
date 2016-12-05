@@ -19,6 +19,8 @@
      Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
      02111-1307, USA
 */
+#include <LibgSpanForSofia.h>
+
 #include <iostream>
 #include <map>
 #include <vector>
@@ -67,15 +69,11 @@ public:
 	};
 	bool directed;
 
-	//  int y; // class label
 	unsigned int edge_size ()   { return edge_size_; }
 	unsigned int vertex_size () { return (unsigned int)size(); } // wrapper
 	void buildEdge ();
 	std::istream &read (std::istream &); // read
-	std::ostream &write (std::ostream &); // write
-	// void read (const mxArray* graph);
-	// void mexprint (void);
-	// mxArray* writemex (void);
+	void saveTo(LibgSpanGraph& graph);
 	void check (void);
 
 	Graph(): edge_size_(0), directed(false) {};
@@ -214,10 +212,9 @@ private:
 	unsigned int minsup;
 	unsigned int maxpat_min;	// lower bound on node count
 	unsigned int maxpat_max;	// upper bound on node count
-	bool where;
-	bool enc;
 	bool directed;
-	std::ostream* os;
+	ReportGraphCallback callback;
+	LibgSpanDataRef  callbackData;
 
 	/* Singular vertex handling stuff
 	 * [graph][vertexlabel] = count.
@@ -259,7 +256,11 @@ private:
 	// 	double gain, double yval);
 	// void report_boosting_inter (Graph &g, unsigned int sup,
 	// 	double gain, double yval, std::map<unsigned int, unsigned int>& GYcounts);
-	void report_single (Graph &g, std::map<unsigned int, unsigned int>& ncount);
+
+	// Reporting graphs constituted of one vertex
+	// @param frequent_label is the label of the sole vertex
+	// @param ncount is the mapping from transaction ID to the number of times the vertex appear in that graph.
+	void report_single (unsigned int frequent_label, std::map<unsigned int, unsigned int>& ncount);
 
 	bool is_min ();
 	bool project_is_min (Projected &);
@@ -267,7 +268,7 @@ private:
 	std::map<unsigned int, unsigned int> support_counts (Projected &projected);
 	unsigned int support (Projected&);
 	void project         (Projected &);
-	void report         (Projected &, unsigned int);
+	bool report         (Projected &, unsigned int);
 
 	std::istream &read (std::istream &);
 	// void read (const mxArray* graphs);
@@ -285,11 +286,9 @@ public:
 	// 	std::vector<double>& _boostWeights,
 	// 	int boostType);
 
-	void run (std::istream &is, std::ostream &_os,
+	void run ( const char inputFileName[], ReportGraphCallback callbackFunc, LibgSpanDataRef  _data,
 		 unsigned int _minsup,
 		 unsigned int _maxpat_min, unsigned int _maxpat_max,
-		 bool _enc,
-		 bool _where,
 		 bool _directed);
 
 	// For use with Matlab.

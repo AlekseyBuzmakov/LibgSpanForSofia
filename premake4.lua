@@ -30,10 +30,24 @@ solution "LibgSpanForSofia"
 			"src/"
 		}
 		files{ "src/**.cpp" }
-		excludes{ "src/mex*.cpp" }
 
 		configuration "Debug"
 			targetname( "LibgSpanForSofia" )
 
 		configuration "Release"
 			targetname( "LibgSpanForSofia" )
+
+	project "test"
+		DefaultConfig("bin")
+		kind "ConsoleApp"
+		includedirs { 
+			"inc/",
+			"src/"
+		}
+		files{ "src/**.cpp" }
+
+		configuration "Debug"
+			targetname( "test" )
+
+		configuration "Release"
+			targetname( "test" )

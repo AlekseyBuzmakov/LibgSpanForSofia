@@ -23,11 +23,19 @@
 #include <iterator>
 
 #include <stdlib.h>
+#include <fstream>
 #include <unistd.h>
 
 namespace LibgSpanForSofia {
 
-gSpan::gSpan (void)
+gSpan::gSpan (void) :
+	ID(-1),
+	minsup(-1),
+	maxpat_min(0),
+	maxpat_max(-1),
+	directed(false),
+	callback(0),
+	callbackData(0)
 {
 	// boost = false;
 }
@@ -323,107 +331,87 @@ gSpan::support (Projected &projected)
 
 /* Special report function for single node graphs.
  */
-void gSpan::report_single (Graph &g, std::map<unsigned int, unsigned int>& ncount)
+void gSpan::report_single (unsigned int label, std::map<unsigned int, unsigned int>& ncount)
 {
+	if (maxpat_max > maxpat_min && 1 > maxpat_max)
+		return;
+	if (maxpat_min > 0 && 1 < maxpat_min)
+		return;
+
 	unsigned int sup = 0;
-	for (std::map<unsigned int, unsigned int>::iterator it = ncount.begin () ;
-		it != ncount.end () ; ++it)
+	std::map<unsigned int, unsigned int>::iterator it = ncount.begin ();
+	for ( ;it != ncount.end () ; ++it)
 	{
-		sup += (*it).second;
+		sup += ((*it).second > 0);
 	}
 
-	if (maxpat_max > maxpat_min && g.size () > maxpat_max)
-		return;
-	if (maxpat_min > 0 && g.size () < maxpat_min)
-		return;
+	LibgSpanGraph graph;
+	graph.VertexCount=1;
+	graph.Vertices=new VertexLabelType[1];
+	graph.Vertices[0]=label;
+	graph.EdgeCount=0;
+	graph.Edges=0;
+	graph.Support=sup;
+	graph.Objects=new int[sup];
 
-	// if (mex) {
-	// 	mexAppendGraph (&g, ID, sup, ncount);
-	// 	++ID;
-	// } else {
-		if (enc == false) {
-			if (where == false)
-				*os << "t # " << ID << " * " << sup;
-			*os << '\n';
-
-			g.write (*os);
-			*os << '\n';
-		} else {
-			std::cerr << "report_single not implemented for non-Matlab calls" << std::endl;
+	it = ncount.begin();
+	for (int i = 0; it != ncount.end(); ++it) {
+		if((*it).second > 0) {
+			graph.Objects[i]=(*it).first;
+			++i;
 		}
-	// }
+	}
+
+	callback(callbackData, &graph);
+
+	delete[] graph.Vertices;
+	graph.Vertices=0;
+	delete[] graph.Objects;
+	graph.Objects=0;
 }
 
 
-void gSpan::report (Projected &projected, unsigned int sup)
+	// @return is the flag that the pattern can be extended further
+bool gSpan::report (Projected &projected, unsigned int sup)
 {
-	/* Filter to small/too large graphs.
+	/* Filter too small/too large graphs.
 	 */
 	if (maxpat_max > maxpat_min && DFS_CODE.nodeCount () > maxpat_max)
-		return;
+		return false;
 	if (maxpat_min > 0 && DFS_CODE.nodeCount () < maxpat_min)
-		return;
+		return true;
 
-	/* Output to matlab.
-	 */
-	// if (mex) {
-	// 	Graph g(directed);
-	// 	DFS_CODE.toGraph (g);
-
-	// 	std::map<unsigned int, unsigned int> counts;
-	// 	unsigned int oid = 0xffffffff;
-	// 	for (Projected::iterator cur = projected.begin(); cur != projected.end(); ++cur) {
-	// 		if (oid != cur->id)
-	// 			counts[cur->id] = 0;
-
-	// 		counts[cur->id] += 1;
-	// 		//mexPrintf("counts[%d] = %d\n", cur->id, counts[cur->id]);
-	// 		oid = cur->id;
-	// 	}
-	// 	mexAppendGraph (&g, ID, sup, counts);
-	// 	++ID;
-	// 	return;
-	// }
-
-	if (where) {
-		*os << "<pattern>\n";
-		*os << "<id>" << ID << "</id>\n";
-		*os << "<support>" << sup << "</support>\n";
-		*os << "<what>";
-	}
-
-	if (! enc) {
-		Graph g(directed);
-		DFS_CODE.toGraph (g);
-
-		if (! where)
-			*os << "t # " << ID << " * " << sup;
-
-		*os << '\n';
-		g.write (*os);
-	} else {
-		if (! where)
-			*os << '<' << ID << ">    " << sup << " [";
-
-		DFS_CODE.write (*os);
-		if (! where) *os << ']';
-	}
-
-	if (where) {
-		*os << "</what>\n<where>";
-		unsigned int oid = 0xffffffff;
-		for (Projected::iterator cur = projected.begin(); cur != projected.end(); ++cur) {
-			if (oid != cur->id) {
-				if (cur != projected.begin()) *os << ' ';
-				*os << cur->id;
-			}
-			oid = cur->id;
+	LibgSpanGraph graph;
+	graph.VertexCount=0;
+	graph.Vertices=0;
+	graph.EdgeCount=0;
+	graph.Edges=0;
+	graph.Support=sup;
+	graph.Objects=new int[sup];
+	unsigned int oid = 0xffffffff;
+	Projected::iterator cur = projected.begin();
+	for (int i = 0; cur != projected.end(); ++cur) {
+		if (oid != cur->id) {
+			graph.Objects[i]=cur->id;
+			++i;
 		}
-		*os << "</where>\n</pattern>";
+		oid = cur->id;
 	}
+	
+	Graph g(directed);
+	DFS_CODE.toGraph (g);
+	g.saveTo (graph);
 
-	*os << '\n';
-	++ID;
+	const bool rslt = callback(callbackData, &graph);
+
+	delete[] graph.Vertices;
+	graph.Vertices=0;
+	delete[] graph.Edges;
+	graph.Edges=0;
+	delete[] graph.Objects;
+	graph.Objects=0;
+
+	return rslt;
 }
 
 /* Recursive subgraph mining function (similar to subprocedure 1
@@ -750,24 +738,21 @@ void gSpan::project (Projected &projected)
 // 	}
 // }
 
-void gSpan::run (std::istream &is, std::ostream &_os,
+void gSpan::run (const char inputFileName[], ReportGraphCallback callbackFunc, LibgSpanDataRef  data,
 		 unsigned int _minsup,
 		 unsigned int _maxpat_min, unsigned int _maxpat_max,
-		 bool _enc,
-		 bool _where,
 		 bool _directed)
 {
-	os = &_os;
+	callback=callbackFunc;
+	callbackData=data;
+
 	ID = 0;
 	minsup = _minsup;
 	maxpat_min = _maxpat_min;
 	maxpat_max = _maxpat_max;
-	enc = _enc;
-	where = _where;
 	directed = _directed;
-	// mex = false;
-	// boost = false;
 
+	std::ifstream is(inputFileName);
 	read (is);
 	run_intern ();
 }
@@ -809,12 +794,6 @@ void gSpan::run_intern (void)
 
 			unsigned int frequent_label = (*it).first;
 
-			/* Found a frequent node label, report it.
-			 */
-			Graph g(directed);
-			g.resize (1);
-			g[0].label = frequent_label;
-
 			/* [graph_id] = count for current substructure
 			 */
 			std::vector<unsigned int> counts (TRANS.size ());
@@ -824,64 +803,11 @@ void gSpan::run_intern (void)
 				counts[(*it2).first] = (*it2).second[frequent_label];
 			}
 
-// 			if (boost) {
-// 				/* Calculate gain and yval.  Here we do not use the normal
-// 				 * gain function as there is no Projected/DFS_CODE there yet.
-// 				 * Hence we need to make a distinction between the 1/1.5-class
-// 				 * and the 2-class case here.
-// 				 */
-// 				double gainm = 0.0;
-// 				double gainm_pos = 0.0;
-// 				double gainm_neg = 0.0;
+			std::map<unsigned int, unsigned int> gycounts;
+			for (unsigned int n = 0 ; n < counts.size () ; ++n)
+				gycounts[n] = counts[n];
 
-// 				for (unsigned int cid = 0 ; cid < counts.size () ; ++cid) {
-// 					if (boostType == 1) {
-// 						// Only consider the positive instances
-// 						if (counts[cid] == 0)
-// 							continue;
-
-// 						gainm += boostY[cid]*boostWeights[cid];	// *1.0 (Y)
-// 					} else if (boostType == 2) {
-// 						double addfactor = 1.0;
-
-// 						if (counts[cid] == 0)
-// 							addfactor = -1.0;	// negation: pattern does not exist
-
-// 						gainm_pos += addfactor*boostY[cid]*boostWeights[cid];
-// 						gainm_neg += -addfactor*boostY[cid]*boostWeights[cid];
-// 					}
-// 				}
-// 				double yval = 1.0;
-
-// 				if (boostType == 2) {
-// 					if (gainm_pos >= gainm_neg) {
-// 						gainm = gainm_pos;
-// 					} else {
-// 						gainm = gainm_neg;
-// 						yval = -1.0;
-// 					}
-// 				}
-
-// //#ifdef	DEBUG
-// 				mexPrintf ("   single node graph, node label %d, gain %lf, yval %lf\n",
-// 					frequent_label, gainm, yval);
-// //#endif
-// 				if (gainm > boostTau) {
-// 					/* Copy it into vector form
-// 					 */
-// 					std::map<unsigned int, unsigned int> gycounts;
-// 					for (unsigned int n = 0 ; n < counts.size () ; ++n)
-// 						gycounts[n] = counts[n];
-
-// 					report_boosting_inter (g, (*it).second, gainm, yval, gycounts);
-// 				}
-// 			} else {
-				std::map<unsigned int, unsigned int> gycounts;
-				for (unsigned int n = 0 ; n < counts.size () ; ++n)
-					gycounts[n] = counts[n];
-
-				report_single (g, gycounts);
-			// }
+			report_single (frequent_label, gycounts);
 		}
 	}
 
