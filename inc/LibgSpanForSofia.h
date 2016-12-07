@@ -11,18 +11,6 @@
 extern "C" {
 #endif
 
-// Enumeration of possible 'gSpan' algorithm modes.
-enum TgSpanRunningMode {
-  // No limitations on found graphs
-  GRM_All = 0,
-  // Only tree-like graphs (including pathes)
-  GRM_Trees,
-  // Only pathes
-  GRM_Pathes,
-
-  GRM_EnumCount
-};
-
 // Type for storing label of vertices
 typedef int VertexLabelType;
 // Type for storing label of edges

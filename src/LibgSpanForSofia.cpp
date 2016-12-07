@@ -134,6 +134,7 @@ bool LibgSpanAPI RungSpan( LibgSpanDataRef data,
 {
 	LibgSpanForSofia::gSpan gspan;
 	gspan.run (inputFileName, callback, data, support, minsize, maxsize, directed);
+	return true;
 }
 
 // A main function for testing properties
