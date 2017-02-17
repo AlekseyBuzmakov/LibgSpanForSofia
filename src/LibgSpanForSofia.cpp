@@ -177,6 +177,10 @@ int main (int argc, char **argv)
 		}
 	}
 
+	if( optind >= argc ) {
+		LibgSpanForSofia::usage ();
+		return -1;
+	}
 	const char* inputFileName = argv[optind];
 	LibgSpanForSofia::output = fopen ( "./gSpan-patterns.out", "w" );
 	ReportGraphCallback callback = LibgSpanForSofia::PrintToFileCallback;

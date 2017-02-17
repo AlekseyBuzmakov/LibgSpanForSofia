@@ -15,7 +15,7 @@ solution "LibgSpanForSofia"
 
 		configuration "Release"
 			defines { "NDEBUG", "BOOST_DISABLE_ASSERTS" }
-			flags { "Optimize","Symbols" }
+			flags { "Optimize" } -- ,"Symbols" }
 			targetdir ("build/release/" .. complimentName)
 
 
